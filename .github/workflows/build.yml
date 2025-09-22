@@ -1,0 +1,68 @@
+# HackBar 快速构建工作流
+name: Quick Build
+
+# 触发条件
+on:
+  push:
+    branches: [ "main", "master", "develop" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  quick-build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    # 检出代码
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    # 设置 Java 8 环境（项目主要目标版本）
+    - name: Set up JDK 8
+      uses: actions/setup-java@v4
+      with:
+        java-version: '8'
+        distribution: 'temurin'
+    
+    # 缓存 Gradle 依赖
+    - name: Cache Gradle packages
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+    
+    # 给 gradlew 执行权限
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+    
+    # 构建项目
+    - name: Build with Gradle
+      run: ./gradlew clean build --no-daemon --stacktrace
+    
+    # 检查构建产物
+    - name: List build artifacts
+      run: |
+        echo "Build directory contents:"
+        ls -la build/
+        echo "Libs directory contents:"
+        ls -la build/libs/ || echo "No libs directory found"
+    
+    # 上传 JAR 文件
+    - name: Upload HackBar JAR
+      uses: actions/upload-artifact@v4
+      with:
+        name: hackbar-extension
+        path: build/libs/*.jar
+        if-no-files-found: error
+        retention-days: 30
+    
+    # 显示构建信息
+    - name: Build Summary
+      run: |
+        echo "✅ HackBar 构建完成！"
+        echo "📦 JAR 文件已生成并上传为构建产物"
+        echo "🔧 可以在 Actions 页面下载构建好的扩展文件"
