@@ -44,6 +44,7 @@ public class BurpExtender implements IBurpExtender, IContextMenuFactory {
         this.Hack_Bar_Menu.add(new XXE_Menu(this));
         this.Hack_Bar_Menu.add(new WebShell_Menu(this));
         this.Hack_Bar_Menu.add(new Reverse_Shell_Menu(this));
+        this.Hack_Bar_Menu.add(new CustomStatement_Menu(this));
 //        this.Hack_Bar_Menu.add(new Decoder_Encoder_Menu(this));
         
         
@@ -59,5 +60,6 @@ public class BurpExtender implements IBurpExtender, IContextMenuFactory {
         menu_list.add(Hack_Bar_Menu);
         return menu_list;
     }
+
     
 }

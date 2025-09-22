@@ -5,9 +5,14 @@ plugins {
 group 'com.bugzy.burp'
 version '2.0'
 
-// 指定Java版本为11
-sourceCompatibility = 11
-targetCompatibility = 11
+sourceCompatibility = 8
+targetCompatibility = 8
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+}
 
 repositories {
     mavenCentral()
