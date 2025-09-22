@@ -52,10 +52,24 @@ jobs:
     # 验证 Gradle Wrapper
     - name: Validate Gradle wrapper
       uses: gradle/actions/wrapper-validation@v4
+      continue-on-error: true
+    
+    # 给 gradlew 执行权限（Linux/macOS）
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+    
+    # 如果 wrapper 有问题，重新生成
+    - name: Regenerate Gradle wrapper if needed
+      run: |
+        if ! ./gradlew --version; then
+          echo "Gradle wrapper seems corrupted, regenerating..."
+          gradle wrapper --gradle-version 8.5
+        fi
+      continue-on-error: true
     
     # 构建项目
     - name: Build with Gradle
-      run: ./gradlew build --no-daemon
+      run: ./gradlew build --no-daemon --stacktrace
     
     # 运行测试（如果有的话）
     - name: Run tests

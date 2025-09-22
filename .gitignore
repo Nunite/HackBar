@@ -1,5 +1,12 @@
 .gradle/
 .idea/
 build/
-gradle/
 bin/
+
+# 保留 Gradle Wrapper 文件，但忽略其他 gradle 缓存
+# gradle/ 目录包含重要的 wrapper 文件，不应该被忽略
+# 只忽略本地的 gradle 缓存目录
+gradle/caches/
+gradle/daemon/
+gradle/native/
+gradle/wrapper/dists/
